@@ -46,7 +46,7 @@ textarea{flex:1;font:inherit;color:var(--ink);background:var(--bg);border:1px so
 .clip{font:inherit;font-size:14px;border:1px dashed var(--accent);background:none;color:var(--accent);border-radius:10px;padding:6px 12px;cursor:pointer}
 .fchip{font-size:14px;background:var(--me);border-radius:999px;padding:4px 6px 4px 12px;display:inline-flex;gap:6px;align-items:center}
 .fchip button{border:0;background:none;color:var(--mute);cursor:pointer;font-size:18px;line-height:1}
-.ex{display:flex;gap:14px}.tabs{display:flex;gap:8px;margin:10px 0 0}.tabs button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 16px;cursor:pointer}.tabs .on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin:12px 0}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.card b{display:block;font-size:14px}.card span{color:var(--accent);font-size:20px;font-weight:700}.job{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;padding:8px 12px}.job summary{cursor:pointer}.job pre{white-space:pre-wrap;font:inherit;margin:8px 0;word-wrap:break-word}.ctl input[type=search],.ctl select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 10px}.kb{border-bottom:1px solid var(--line);padding:8px 14px;font-size:14px}.kb summary{cursor:pointer;color:var(--accent);font-weight:600}.kbi input{width:100%;margin-top:8px;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px}.kbi textarea{width:100%;margin-top:8px;min-height:70px}.kbr{display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap}.kbr .go{padding:8px 14px}.note{margin-top:12px;font-size:14px;color:var(--mute)}
+.ex{display:flex;gap:14px}.tabs{display:flex;gap:8px;margin:10px 0 0}.tabs button{font:inherit;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 16px;cursor:pointer}.tabs .on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin:12px 0}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}.card b{display:block;font-size:14px}.card span{color:var(--accent);font-size:20px;font-weight:700}.job{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;padding:8px 12px}.job summary{cursor:pointer}.job pre{white-space:pre-wrap;font:inherit;margin:8px 0;word-wrap:break-word}.ctl input[type=search],.ctl select{font:inherit;color:var(--ink);background:var(--card);border:1px solid var(--line);border-radius:10px;padding:6px 10px}.kb{border-bottom:1px solid var(--line);padding:8px 14px;font-size:14px}.kb summary{cursor:pointer;color:var(--accent);font-weight:600}.kbi input{width:100%;margin-top:8px;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px}.kbi textarea{width:100%;margin-top:8px;min-height:70px}.kbr{display:flex;gap:8px;margin-top:8px;align-items:center;flex-wrap:wrap}.kbr .go{padding:8px 14px}.chartbox{position:relative;height:280px;width:min(100%,560px);margin:8px 0;background:#fff;border-radius:10px;padding:6px}.jobbody{white-space:pre-wrap;margin:8px 0;word-wrap:break-word}.note{margin-top:12px;font-size:14px;color:var(--mute)}
 </style>
 </head>
 <body>
@@ -204,7 +204,7 @@ function draw(){}
 let last=0;requestAnimationFrame(function L(t){const dt=Math.min(.05,(t-last)/1000||0);last=t;upd(dt);rend(t);requestAnimationFrame(L)});
 function pick(s){cur=s;$('#pn').textContent=s.n;$('#pr').textContent=s.r;
 $('#chips').innerHTML='';s.c.concat(['ทำเป็นรายงานพร้อมตาราง','ทำเป็นสไลด์นำเสนอ']).forEach(x=>{const b=document.createElement('button');b.textContent=x;b.onclick=()=>{$('#t').value=x+' ';$('#t').focus()};$('#chips').appendChild(b)});draw();render();showFiles();kbShow()}
-function bubble(role,text,copy){const d=document.createElement('div');d.className='m '+role;d.textContent=text;
+function bubble(role,text,copy){const d=document.createElement('div');d.className='m '+role;if(role==='bot'&&/```chart/.test(text))richInto(d,text);else d.textContent=text;
 if(copy){const c=document.createElement('button');c.className='cp';c.textContent='คัดลอก';c.onclick=async()=>{try{await navigator.clipboard.writeText(text);c.textContent='คัดลอกแล้ว ✓'}catch(e){c.textContent='คัดลอกไม่ได้'}};d.appendChild(c)}
 if(copy)addExp(d,text);$('#log').appendChild(d);$('#log').scrollTop=1e9;return d}
 function render(){$('#log').innerHTML='';const h=hist[cur.id];
@@ -217,7 +217,7 @@ const me=cur,h=hist[me.id];const fs=att[me.id]||[];let ft='';const imgs=[];fs.fo
 if(h.length===1)$('#log').innerHTML='';
 bubble('me',shown);const out=bubble('bot','กำลังทำงาน…');busy=true;$('#send').disabled=true;st[me.id]='work';draw();
 let useT=false;if(me.id==='rk'){try{useT=!!(await sample.limits()).tools}catch(e){}}
-const msgs=h.map((m,i)=>({role:m.role,content:i===0?me.p+(me.id==='rk'?rkKB(useT):'')+kbText(me.id,v)+'\n\nข้อควรปฏิบัติ: ห้ามขอหรือใช้ข้อมูลระบุตัวผู้ป่วย และระบุให้ผู้ใช้ตรวจทานก่อนใช้จริง ถ้าผู้ใช้ขอรายงานหรือตาราง ให้เขียนเป็น Markdown โดยใช้หัวข้อ # และตารางแบบ | คอลัมน์ | เพื่อส่งออกเป็น Word/Excel ได้ ถ้าขอสไลด์หรือพรีเซนเทชันให้เขียน # ชื่อเรื่อง แล้วใช้ ## หนึ่งหัวข้อต่อหนึ่งสไลด์ พร้อมหัวข้อย่อยสั้นๆ 3-5 ข้อ และไม่ต้องเกริ่นนำยาว\n\n---\nงานที่สั่ง: '+(m.full||m.content):(m.full||m.content)}));
+const msgs=h.map((m,i)=>({role:m.role,content:i===0?me.p+(me.id==='rk'?rkKB(useT):'')+kbText(me.id,v)+'\n\nข้อควรปฏิบัติ: ห้ามขอหรือใช้ข้อมูลระบุตัวผู้ป่วย และระบุให้ผู้ใช้ตรวจทานก่อนใช้จริง ถ้าผู้ใช้ขอรายงานหรือตาราง ให้เขียนเป็น Markdown โดยใช้หัวข้อ # และตารางแบบ | คอลัมน์ | เพื่อส่งออกเป็น Word/Excel ได้ ถ้าขอสไลด์หรือพรีเซนเทชันให้เขียน # ชื่อเรื่อง แล้วใช้ ## หนึ่งหัวข้อต่อหนึ่งสไลด์ พร้อมหัวข้อย่อยสั้นๆ 3-5 ข้อ ถ้าผู้ใช้ขอกราฟ หรือข้อมูลตัวเลขเหมาะแสดงเป็นกราฟ ให้ใส่บล็อกกราฟรูปแบบนี้ (type ใช้ได้: bar, hbar, line, area, pie, doughnut):\n```chart\n{"type":"bar","title":"ชื่อกราฟ","labels":["ม.ค.","ก.พ."],"series":[{"name":"ชุดข้อมูล","data":[10,20]}]}\n```\nต้องเป็น JSON ที่ถูกต้อง ตัวเลขเป็นตัวเลขจริง และห้ามแต่งตัวเลขที่ไม่ได้มาจากข้อมูลของผู้ใช้หรือเอกสารที่แนบ และไม่ต้องเกริ่นนำยาว\n\n---\nงานที่สั่ง: '+(m.full||m.content):(m.full||m.content)}));
 try{const so={onText:({text})=>{if(cur===me)out.textContent=text}};if(imgs.length)so.images=imgs;if(useT)so.tools=rkTools(out);else so.cache=false;
 const r=await sample(msgs,so);
 h.push({role:'assistant',content:r.text});saveJob(me,v,r.text);st[me.id]='done';if(cur===me){out.remove();bubble('bot',r.text,true)}}
@@ -246,6 +246,7 @@ const E=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const MIME={docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'};
 function parse(t){const L=t.split('\n'),B=[];let i=0;
 while(i<L.length){const l=L[i];
+if(/^\s*```chart/.test(l)){let j=i+1;const buf=[];while(j<L.length&&!/^\s*```/.test(L[j])){buf.push(L[j]);j++}i=j+1;try{const sp=JSON.parse(buf.join('\n'));if(sp&&Array.isArray(sp.series))B.push({t:'chart',spec:sp})}catch(e){}continue}
 if(/^\s*\|/.test(l)){const rows=[];while(i<L.length&&/^\s*\|/.test(L[i])){const r=L[i].trim().replace(/^\||\|$/g,'').split('|').map(x=>x.trim().replace(/\*\*/g,''));if(!r.every(x=>/^:?-{2,}:?$/.test(x)))rows.push(r);i++}B.push({t:'table',rows});continue}
 const h=l.match(/^(#{1,3})\s+(.*)/);
 if(h)B.push({t:'h',n:h[1].length,x:h[2]});
@@ -253,24 +254,46 @@ else if(/^\s*[-*•]\s+/.test(l))B.push({t:'li',x:l.replace(/^\s*[-*•]\s+/,'')
 else if(l.trim()&&!/^-{3,}$/.test(l.trim()))B.push({t:'p',x:l.trim()});
 i++}return B}
 const runs=(x,sz,b)=>x.split('**').map((s,i)=>s?'<w:r><w:rPr><w:rFonts w:ascii="TH Sarabun New" w:hAnsi="TH Sarabun New" w:cs="TH Sarabun New"/>'+(b||i%2?'<w:b/><w:bCs/>':'')+'<w:sz w:val="'+sz+'"/><w:szCs w:val="'+sz+'"/></w:rPr><w:t xml:space="preserve">'+E(s)+'</w:t></w:r>':'').join('');
-function docXml(t){let o='';
-parse(t).forEach(b=>{
+function docXml(t,imgs){let o='',ci=0;
+parse(t).forEach(b=>{if(b.t==='chart'){ci++;if(imgs&&imgs[ci-1])o+=dwg(imgs[ci-1],ci);return}
+
 if(b.t==='h')o+='<w:p><w:pPr><w:spacing w:before="240" w:after="120"/></w:pPr>'+runs(b.x,[0,40,34,32][b.n],1)+'</w:p>';
 else if(b.t==='li')o+='<w:p><w:pPr><w:ind w:left="540" w:hanging="270"/></w:pPr>'+runs('• '+b.x,32)+'</w:p>';
 else if(b.t==='p')o+='<w:p><w:pPr><w:spacing w:after="120"/></w:pPr>'+runs(b.x,32)+'</w:p>';
 else{const n=Math.max(...b.rows.map(r=>r.length)),w=Math.floor(9600/n),bd=['top','left','bottom','right','insideH','insideV'].map(k=>'<w:'+k+' w:val="single" w:sz="4" w:space="0" w:color="999999"/>').join('');
-o+='<w:tbl><w:tblPr><w:tblW w:w="5000" w:type="pct"/><w:tblBorders>'+bd+'</w:tblBorders></w:tblPr><w:tblGrid>'+'<w:gridCol w:w="'+w+'"/>'.repeat(n)+'</w:tblGrid>'+b.rows.map((r,ri)=>'<w:tr>'+Array.from({length:n},(_,ci)=>'<w:tc><w:tcPr><w:tcW w:w="'+w+'" w:type="dxa"/>'+(ri?'':'<w:shd w:val="clear" w:color="auto" w:fill="E3F2EF"/>')+'</w:tcPr><w:p>'+runs(r[ci]||'',28,!ri)+'</w:p></w:tc>').join('')+'</w:tr>').join('')+'</w:tbl><w:p/>'}});
-return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'+o+'<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1440" w:right="1134" w:bottom="1440" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>'}
-async function toDocx(t){if(!window.JSZip)await lib('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');const z=new JSZip();
-z.file('[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
+o+='<w:tbl><w:tblPr><w:tblW w:w="9600" w:type="dxa"/><w:tblBorders>'+bd+'</w:tblBorders><w:tblLayout w:type="fixed"/></w:tblPr><w:tblGrid>'+('<w:gridCol w:w="'+w+'"/>').repeat(n)+'</w:tblGrid>'+b.rows.map((r,ri)=>'<w:tr>'+Array.from({length:n},(_,ci)=>'<w:tc><w:tcPr><w:tcW w:w="'+w+'" w:type="dxa"/>'+(ri?'':'<w:shd w:val="clear" w:color="auto" w:fill="E3F2EF"/>')+'</w:tcPr><w:p>'+runs(r[ci]||'',28,!ri)+'</w:p></w:tc>').join('')+'</w:tr>').join('')+'</w:tbl><w:p/>'}});
+return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><w:body>'+o+'<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1440" w:right="1134" w:bottom="1440" w:left="1134" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>'}
+const PAL=['#0f766e','#f2b84b','#e8833a','#6ea8d8','#9a86d6','#d5668a','#5ab868','#c58b5c'];
+async function chartLib(){if(!window.Chart)await lib('https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js');Chart.defaults.font.family="Sarabun, Tahoma, sans-serif"}
+function mkCfg(sp){const t=String(sp.type||'bar').toLowerCase(),labels=(sp.labels||[]).slice(0,60).map(String),ser=(sp.series||[]).slice(0,6).map(s=>({name:String(s.name||''),data:(s.data||[]).slice(0,60).map(Number)}));
+const pie=t==='pie'||t==='doughnut',ty=pie?t:(t==='hbar'?'bar':(t==='area'?'line':t));
+return{type:ty,data:{labels,datasets:(pie?ser.slice(0,1):ser).map((s,i)=>({label:s.name,data:s.data,backgroundColor:pie?labels.map((_,j)=>PAL[j%PAL.length]):(ty==='line'?PAL[i%PAL.length]+(t==='area'?'55':''):PAL[i%PAL.length]+'dd'),borderColor:pie?'#fff':PAL[i%PAL.length],borderWidth:ty==='line'?2.5:1,tension:.3,fill:t==='area'}))},
+options:{indexAxis:t==='hbar'?'y':'x',responsive:true,maintainAspectRatio:false,animation:false,plugins:{title:{display:!!sp.title,text:String(sp.title||''),font:{size:15}},legend:{display:pie||ser.length>1}},scales:pie?{}:{y:{beginAtZero:true,title:{display:!!sp.yTitle,text:String(sp.yTitle||'')}},x:{title:{display:!!sp.xTitle,text:String(sp.xTitle||'')}}}}}}
+async function chartPng(sp,w,h){await chartLib();const c=document.createElement('canvas');c.width=w||900;c.height=h||500;const cfg=mkCfg(sp);cfg.options.responsive=false;cfg.options.devicePixelRatio=1;
+cfg.plugins=[{id:'bg',beforeDraw:ch=>{ch.ctx.save();ch.ctx.fillStyle='#fff';ch.ctx.fillRect(0,0,ch.width,ch.height);ch.ctx.restore()}}];
+const ch=new Chart(c,cfg);const u=c.toDataURL('image/png');ch.destroy();const b=atob(u.split(',')[1]),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a}
+function richInto(el,text){el.textContent='';const parts=String(text).split(/```chart\s*\n?([\s\S]*?)```/);
+parts.forEach((p,i)=>{if(i%2===0){if(p.trim()){const s=document.createElement('span');s.textContent=p.replace(/^\n+|\n+$/g,'');el.appendChild(s)}}
+else{let sp=null;try{sp=JSON.parse(p.trim())}catch(e){}
+if(sp&&Array.isArray(sp.series)){const w=document.createElement('div');w.className='chartbox';const c=document.createElement('canvas');w.appendChild(c);el.appendChild(w);chartLib().then(()=>new Chart(c,mkCfg(sp))).catch(()=>{w.textContent='โหลดไลบรารีกราฟไม่ได้'})}
+else{const pr=document.createElement('pre');pr.textContent=p;el.appendChild(pr)}}})}
+const dwg=(im,n)=>'<w:p><w:pPr><w:jc w:val="center"/></w:pPr><w:r><w:drawing><wp:inline distT="0" distB="0" distL="0" distR="0"><wp:extent cx="5760000" cy="3200000"/><wp:docPr id="'+(n+100)+'" name="chart'+n+'"/><a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture"><pic:nvPicPr><pic:cNvPr id="'+n+'" name="chart'+n+'.png"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed="rIdImg'+n+'"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="5760000" cy="3200000"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>';
+async function toDocx(t){if(!window.JSZip)await lib('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');const z=new JSZip(),imgs=[];
+for(const b of parse(t)){if(b.t==='chart'){try{imgs.push(await chartPng(b.spec))}catch(e){imgs.push(null)}}}
+const hasI=imgs.some(Boolean);
+z.file('[Content_Types].xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>'+(hasI?'<Default Extension="png" ContentType="image/png"/>':'')+'<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>');
 z.file('_rels/.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>');
-z.file('word/document.xml',docXml(t));return z.generateAsync({type:'blob',mimeType:MIME.docx})}
+if(hasI){let r='';imgs.forEach((a,i)=>{if(a){r+='<Relationship Id="rIdImg'+(i+1)+'" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/chart'+(i+1)+'.png"/>';z.file('word/media/chart'+(i+1)+'.png',a,{binary:true})}});
+z.file('word/_rels/document.xml.rels','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+r+'</Relationships>')}
+z.file('word/document.xml',docXml(t,imgs));return z.generateAsync({type:'blob',mimeType:MIME.docx})}
+
 async function toXlsx(t){if(!window.XLSX)await lib('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');
-const B=parse(t),wb=XLSX.utils.book_new(),tb=B.filter(b=>b.t==='table'),tx=B.filter(b=>b.t!=='table');
+const B=parse(t),wb=XLSX.utils.book_new(),tb=B.filter(b=>b.t==='table'),tx=B.filter(b=>b.t!=='table'&&b.t!=='chart'),CH=B.filter(b=>b.t==='chart');
 const num=v=>/^-?\d+(\.\d+)?$/.test(v)?+v:v;
 const add=(rows,name)=>{const ws=XLSX.utils.aoa_to_sheet(rows);ws['!cols']=(rows.reduce((a,r)=>r.length>a.length?r:a,[])).map((_,ci)=>({wch:Math.min(60,Math.max(8,...rows.map(r=>String(r[ci]??'').length*1.3)))}));XLSX.utils.book_append_sheet(wb,ws,name)};
 tb.forEach((b,i)=>add(b.rows.map((r,ri)=>ri?r.map(num):r),'ตาราง'+(i+1)));
-if(tx.length||!tb.length)add(tx.map(b=>[(b.t==='li'?'• ':'')+b.x.replace(/\*\*/g,'')]),tb.length?'สรุป':'รายงาน');
+CH.forEach((b,i)=>{const rows=[[''].concat(b.spec.series.map(x=>String(x.name||'')))];(b.spec.labels||[]).forEach((l,r)=>rows.push([String(l)].concat(b.spec.series.map(x=>num(x.data[r]===undefined?'':String(x.data[r]))))));add(rows,'กราฟ'+(i+1))});
+if(tx.length||(!tb.length&&!CH.length))add(tx.map(b=>[(b.t==='li'?'• ':'')+b.x.replace(/\*\*/g,'')]),tb.length?'สรุป':'รายงาน');
 return new Blob([XLSX.write(wb,{bookType:'xlsx',type:'array'})],{type:MIME.xlsx})}
 async function exp(fmt,t,btn,fn){const dl=DLX;if(!dl){btn.textContent='หน้านี้บันทึกไฟล์ไม่ได้';return}
 try{const data=fmt==='docx'?await toDocx(t):fmt==='pptx'?await toPptx(t):await toXlsx(t);await dl.save({filename:'report-'+(fn||cur.id)+'-'+new Date().toISOString().slice(0,10)+'.'+fmt,data});btn.textContent='✓ บันทึกแล้ว'}
@@ -284,7 +307,7 @@ if(b.t==='h'){c={h:b.x.replace(/\*\*/g,''),it:[]};sl.push(c);return}
 if(!c){c={h:title?'ภาพรวม':'สรุป',it:[]};sl.push(c)}c.it.push(b)});
 if(!title)title=sl.length?sl[0].h:'สรุปงาน';
 const out=[];sl.forEach(s=>{let ch=[],n=0;const flush=()=>{if(ch.length){out.push({h:s.h+(out.length&&out[out.length-1].src===s?' (ต่อ)':''),it:ch,src:s});ch=[];n=0}};
-s.it.forEach(b=>{if(b.t==='table'){flush();for(let i=1;i<b.rows.length||i===1;i+=7){out.push({h:s.h+(i>1?' (ต่อ)':''),it:[{t:'table',rows:[b.rows[0]].concat(b.rows.slice(i,i+7))}],src:s})}}
+s.it.forEach(b=>{if(b.t==='chart'){flush();out.push({h:b.spec.title||s.h,it:[b],src:s})}else if(b.t==='table'){flush();for(let i=1;i<b.rows.length||i===1;i+=7){out.push({h:s.h+(i>1?' (ต่อ)':''),it:[{t:'table',rows:[b.rows[0]].concat(b.rows.slice(i,i+7))}],src:s})}}
 else{ch.push(b);n+=1+Math.floor(b.x.length/70);if(n>=7)flush()}});flush()});
 if(!out.length)out.push({h:title,it:[],src:{}});
 const D=p.addSlide();D.background={color:DEEP};
@@ -299,11 +322,15 @@ S.addShape(p.ShapeType.rect,{x:0,y:0,w:0.28,h:7.5,fill:{color:TEAL},line:{color:
 S.addShape(p.ShapeType.ellipse,{x:11.6,y:-0.9,w:2.6,h:2.6,fill:{color:SOFT},line:{color:SOFT}});
 S.addText(s.h,{x:0.8,y:0.4,w:11,h:0.9,fontFace:F,lang:'th-TH',fontSize:28,bold:true,color:DEEP,valign:'middle'});
 S.addShape(p.ShapeType.rect,{x:0.8,y:1.3,w:1.1,h:0.07,fill:{color:GOLD},line:{color:GOLD}});
-let y=1.65;const tx=s.it.filter(b=>b.t!=='table');
+let y=1.65;const tx=s.it.filter(b=>b.t!=='table'&&b.t!=='chart');
 if(tx.length){const runs=[];tx.forEach(b=>{const parts=b.x.split('**').map((q,k)=>({q,k})).filter(o=>o.q);parts.forEach((o,j)=>{const op={bold:o.k%2===1};if(j===0){op.bullet=b.t==='li'?{indent:22}:false;op.paraSpaceAfter=9}if(j===parts.length-1)op.breakLine=true;runs.push({text:o.q,options:op})})});
 const h=s.it.some(b=>b.t==='table')?2:4.9;S.addText(runs,{x:0.8,y,w:11.8,h,fontFace:F,lang:'th-TH',fontSize:20,color:INK,valign:'top'});y+=h===2?2.1:0}
 s.it.filter(b=>b.t==='table').forEach(b=>{const rows=b.rows.map((r,ri)=>r.map(x=>({text:x,options:{fontFace:F,lang:'th-TH',fontSize:15,bold:!ri,color:ri?INK:'FFFFFF',fill:{color:ri?(ri%2?'FFFFFF':SOFT):TEAL},valign:'middle'}})));
 S.addTable(rows,{x:0.8,y,w:11.8,border:{type:'solid',pt:0.75,color:'BFD8D3'},rowH:0.5,margin:0.08})});
+s.it.filter(b=>b.t==='chart').forEach(b=>{const sp=b.spec,ty=String(sp.type||'bar').toLowerCase(),pie=ty==='pie'||ty==='doughnut',ser=(sp.series||[]).slice(0,6),lab=(sp.labels||[]).slice(0,60).map(String),PX=['0F766E','F2B84B','E8833A','6EA8D8','9A86D6','D5668A','5AB868','C58B5C'];
+const data=(pie?ser.slice(0,1):ser).map(x=>({name:String(x.name||'ข้อมูล'),labels:lab,values:(x.data||[]).slice(0,60).map(Number)}));
+const T={bar:p.charts.BAR,hbar:p.charts.BAR,line:p.charts.LINE,pie:p.charts.PIE,doughnut:p.charts.DOUGHNUT,area:p.charts.AREA}[ty]||p.charts.BAR;
+S.addChart(T,data,{x:0.8,y:1.6,w:11.8,h:5.2,barDir:ty==='hbar'?'bar':'col',chartColors:pie?lab.map((_,i)=>PX[i%8]):PX,showLegend:pie||data.length>1,legendPos:'b',legendFontFace:F,legendFontSize:14,catAxisLabelFontFace:F,catAxisLabelFontSize:14,valAxisLabelFontFace:F,valAxisLabelFontSize:13,showValue:true,dataLabelFontFace:F,dataLabelFontSize:13,lineSize:3})});
 S.addText('Stroke Unit · โรงพยาบาลนครปฐม',{x:0.8,y:7.0,w:6,h:0.3,fontFace:F,lang:'th-TH',fontSize:10,color:'7A8A86'});
 S.addText(String(i+1),{x:12.2,y:7.0,w:0.6,h:0.3,fontFace:F,lang:'th-TH',fontSize:10,color:'7A8A86',align:'right'})});
 const E2=p.addSlide();E2.background={color:DEEP};
@@ -313,7 +340,7 @@ E2.addText('ร่างโดยสำนักงาน AI · โปรดต�
 return p}
 async function toPptx(t){if(!window.PptxGenJS)await lib('https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.bundle.js');if(!window.JSZip)await lib('https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js');
 const z=await JSZip.loadAsync(await buildPptx(t,PptxGenJS).write({outputType:'arraybuffer'}));
-for(const n of Object.keys(z.files)){if(/^ppt\/(slides\/slide\d+|theme\/theme\d+)\.xml$/.test(n)){let x=await z.file(n).async('string');x=x.replace(/charset="-122"/g,'charset="0"').replace(/charset="-120"/g,'charset="0"').replace(/<a:font script="Thai" typeface="[^"]*"\/>/g,'<a:font script="Thai" typeface="Tahoma"/>');z.file(n,x)}}
+for(const n of Object.keys(z.files)){if(/^ppt\/(slides\/slide\d+|theme\/theme\d+|charts\/chart\d+)\.xml$/.test(n)){let x=await z.file(n).async('string');x=x.replace(/charset="-122"/g,'charset="0"').replace(/charset="-120"/g,'charset="0"').replace(/<a:font script="Thai" typeface="[^"]*"\/>/g,'<a:font script="Thai" typeface="Tahoma"/>');z.file(n,x)}}
 return z.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.presentationml.presentation'})}
 const KB={};let KBI={};const BUD=120000;
 const kfeats=t=>{const a=new Set();t=t.toLowerCase();(t.match(/[ก-๙]+/g)||[]).forEach(w=>{for(let i=0;i+3<=w.length;i++)a.add(w.substr(i,3))});(t.match(/[a-z0-9][a-z0-9\-]{2,}/g)||[]).forEach(w=>a.add(w));return a};
@@ -351,8 +378,9 @@ function sumMd(){const s=stats(JOBS),cl=x=>String(x).replace(/\|/g,'/').replace(
 let m='# สรุปผลงานสำนักงาน AI\n## ภาพรวม\n- งานทั้งหมด '+JOBS.length+' งาน\n';
 if(JOBS.length)m+='- ช่วงข้อมูล '+fmtD(JOBS[JOBS.length-1].ts)+' ถึง '+fmtD(JOBS[0].ts)+'\n';
 m+='## ผลงานแยกตามพนักงาน\n| พนักงาน | ตำแหน่ง | จำนวนงาน |\n|---|---|---|\n'+STAFF.map(x=>'| '+x.n+' | '+x.r+' | '+(s.by[x.id]||0)+' |').join('\n')+'\n';
+if(JOBS.length)m+='```chart\n'+JSON.stringify({type:'bar',title:'จำนวนงานแยกตามพนักงาน',labels:STAFF.map(x=>x.n),series:[{name:'จำนวนงาน',data:STAFF.map(x=>s.by[x.id]||0)}]})+'\n```\n';
 const ks=Object.keys(s.sev).sort();
-if(ks.length)m+='## ระดับความรุนแรงที่ลงโดยน้อง Risk\n| ระดับ | จำนวน |\n|---|---|\n'+ks.map(k=>'| '+k+' | '+s.sev[k]+' |').join('\n')+'\n';
+if(ks.length)m+='## ระดับความรุนแรงที่ลงโดยน้อง Risk\n| ระดับ | จำนวน |\n|---|---|\n'+ks.map(k=>'| '+k+' | '+s.sev[k]+' |').join('\n')+'\n```chart\n'+JSON.stringify({type:'pie',title:'สัดส่วนระดับความรุนแรง',labels:ks,series:[{name:'จำนวน',data:ks.map(k=>s.sev[k])}]})+'\n```\n';
 if(JOBS.length)m+='## งานล่าสุด\n| วันที่ | พนักงาน | เรื่อง |\n|---|---|---|\n'+JOBS.slice(0,10).map(j=>'| '+fmtD(j.ts)+' | '+j.name+' | '+cl(j.q).slice(0,60)+' |').join('\n');
 return m}
 let DB=true,JOBS=[],canW=true;
@@ -368,7 +396,7 @@ $('#sumex').innerHTML='';addExp($('#sumex'),sumMd(),'summary');
 const L=JOBS.filter(j=>(!f||j.staff===f)&&(!q||((j.q||'')+' '+(j.a||'')).toLowerCase().includes(q))).slice(0,100),h=$('#hl');h.innerHTML='';
 if(!L.length){h.textContent=JOBS.length?'ไม่พบรายการที่ตรงกับตัวกรอง':'ยังไม่มีประวัติงาน เมื่อสั่งงานน้อง ๆ ผลงานจะมาอยู่ที่นี่';return}
 L.forEach(j=>{const d=document.createElement('details');d.className='job';const sm=document.createElement('summary');sm.textContent=fmtD(j.ts)+' · '+j.name+(j.sev?' · ระดับ '+j.sev:'')+' · '+(j.q||'').slice(0,70);d.appendChild(sm);
-const pr=document.createElement('pre');pr.textContent=j.a||'';d.appendChild(pr);addExp(d,j.a||'',j.staff);
+const pr=document.createElement('div');pr.className='jobbody';richInto(pr,j.a||'');d.appendChild(pr);addExp(d,j.a||'',j.staff);
 if(canW){const x=document.createElement('button');x.className='cp';x.textContent='🗑 ลบ';let arm=false;x.onclick=async()=>{if(!arm){arm=true;x.textContent='แตะอีกครั้งเพื่อยืนยันลบ';return}try{await gcall({action:'del',id:j.id});JOBS=JOBS.filter(k=>k.id!==j.id);renderHist()}catch(e){x.textContent='ลบไม่ได้'}};d.appendChild(x)}
 h.appendChild(d)})}
 function tab(n){$('#v1').hidden=n!==1;$('#v2').hidden=n!==2;$('#t1').classList.toggle('on',n===1);$('#t2').classList.toggle('on',n===2);if(n===2)initDB()}
@@ -391,7 +419,7 @@ gsample.limits=async()=>({tools:false,images:true});
 const DLX={save:async({filename,data})=>{const a=document.createElement('a');a.href=URL.createObjectURL(data);a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000)}};
 $('#cu').value=CFG.u;$('#ck').value=CFG.k;if(!CFG.u)$('#cfg').open=true;
 $('#cs').onclick=async()=>{localStorage.setItem('gu',$('#cu').value.trim());localStorage.setItem('gk',$('#ck').value);$('#cm').textContent='กำลังทดสอบ…';try{const j=await gcall({action:'ping'});$('#cm').textContent=j.hasKey?'เชื่อมต่อสำเร็จ ✓ โมเดล: '+j.model:'เชื่อมต่อได้ แต่ยังไม่ได้ตั้ง GEMINI_KEY';initDB()}catch(e){$('#cm').textContent=(ERRC[e.code]||'เชื่อมต่อไม่ได้')+(e.message?' ['+String(e.message).slice(0,200)+']':'')}};
-const GUARD='\n\nข้อควรปฏิบัติ: ห้ามขอหรือใช้ข้อมูลระบุตัวผู้ป่วย และระบุให้ผู้ใช้ตรวจทานก่อนใช้จริง ถ้าผู้ใช้ขอรายงานหรือตาราง ให้เขียนเป็น Markdown โดยใช้หัวข้อ # และตารางแบบ | คอลัมน์ | เพื่อส่งออกเป็น Word/Excel ได้ ถ้าขอสไลด์หรือพรีเซนเทชันให้เขียน # ชื่อเรื่อง แล้วใช้ ## หนึ่งหัวข้อต่อหนึ่งสไลด์ พร้อมหัวข้อย่อยสั้นๆ 3-5 ข้อ และไม่ต้องเกริ่นนำยาว\n\n---\nงานที่สั่ง: ';
+const GUARD='\n\nข้อควรปฏิบัติ: ห้ามขอหรือใช้ข้อมูลระบุตัวผู้ป่วย และระบุให้ผู้ใช้ตรวจทานก่อนใช้จริง ถ้าผู้ใช้ขอรายงานหรือตาราง ให้เขียนเป็น Markdown โดยใช้หัวข้อ # และตารางแบบ | คอลัมน์ | เพื่อส่งออกเป็น Word/Excel ได้ ถ้าขอสไลด์หรือพรีเซนเทชันให้เขียน # ชื่อเรื่อง แล้วใช้ ## หนึ่งหัวข้อต่อหนึ่งสไลด์ พร้อมหัวข้อย่อยสั้นๆ 3-5 ข้อ ถ้าผู้ใช้ขอกราฟ หรือข้อมูลตัวเลขเหมาะแสดงเป็นกราฟ ให้ใส่บล็อกกราฟรูปแบบนี้ (type ใช้ได้: bar, hbar, line, area, pie, doughnut):\n```chart\n{"type":"bar","title":"ชื่อกราฟ","labels":["ม.ค.","ก.พ."],"series":[{"name":"ชุดข้อมูล","data":[10,20]}]}\n```\nต้องเป็น JSON ที่ถูกต้อง ตัวเลขเป็นตัวเลขจริง และห้ามแต่งตัวเลขที่ไม่ได้มาจากข้อมูลของผู้ใช้หรือเอกสารที่แนบ และไม่ต้องเกริ่นนำยาว\n\n---\nงานที่สั่ง: ';
 const ROSTER=()=>STAFF.filter(s=>s.id!=='ld').map(s=>s.id+' = '+s.n+' ('+s.r+')').join('\n');
 const leadPrompt=()=>'คุณคือหัวหน้าทีมของหน่วยโรคหลอดเลือดสมอง โรงพยาบาลนครปฐม หน้าที่คือรับงานจากผู้ใช้ แตกเป็นงานย่อย แล้วมอบหมายให้พนักงานที่เหมาะสม\nพนักงานที่มี (id = ชื่อ (หน้าที่)):\n'+ROSTER()+'\nกติกา: เลือกพนักงานเท่าที่จำเป็น ไม่เกิน 4 งาน คำสั่งของแต่ละงานย่อยต้องครบถ้วนและมีบริบทที่จำเป็นทั้งหมด เพราะพนักงานไม่เห็นข้อความของผู้ใช้ ห้ามใส่ข้อมูลระบุตัวผู้ป่วย ถ้างานง่ายและไม่ต้องมอบหมาย ให้ตอบเองด้วย {"direct":"คำตอบ"}\nตอบเป็น JSON เท่านั้น ห้ามมีข้อความอื่นหรือ markdown fence ตามรูปแบบ {"summary":"สรุปแผนสั้นๆ","tasks":[{"staff":"id","task":"คำสั่ง"}]}';
 async function askStaff(s,task){return gsample([{role:'user',content:s.p+(s.id==='rk'?rkKB(false):'')+kbText(s.id,task)+GUARD+task}])}
@@ -416,7 +444,7 @@ try{const r=await retry(()=>askStaff(s,t.task));res.push({s,a:r.text});st[s.id]=
 catch(e){st[s.id]='idle';w.textContent='⚠️ '+s.n+': '+(ERRC[e.code]||'ทำงานไม่สำเร็จ')+(e&&e.message?' ['+String(e.message).slice(0,120)+']':'')}}
 if(!res.length){bubble('bot','ยังไม่มีงานที่ทำสำเร็จ ลองสั่งใหม่อีกครั้งค่ะ');st.ld='idle';return}
 const w2=bubble('bot','🧭 หัวหน้าทีมกำลังรวมผลงานเป็นรายงาน…');
-const sum=await retry(()=>gsample([{role:'user',content:'คุณคือหัวหน้าทีมของหน่วยโรคหลอดเลือดสมอง โรงพยาบาลนครปฐม รวมผลงานของพนักงานต่อไปนี้เป็นรายงานสรุปฉบับเดียวที่เรียบเรียงดี ตอบเป็น Markdown ใช้หัวข้อ # สำหรับชื่อเรื่อง และ ## สำหรับแต่ละหัวข้อ ใช้ตารางแบบ | เมื่อเหมาะสม ไม่ต้องเกริ่นนำ และระบุท้ายรายงานให้ตรวจทานก่อนใช้จริง\n\nคำสั่งเดิมของผู้ใช้: '+v+'\n\nผลงาน:\n'+res.map(r=>'### '+r.s.n+'\n'+r.a.slice(0,12000)).join('\n\n')}]));
+const sum=await retry(()=>gsample([{role:'user',content:'คุณคือหัวหน้าทีมของหน่วยโรคหลอดเลือดสมอง โรงพยาบาลนครปฐม รวมผลงานของพนักงานต่อไปนี้เป็นรายงานสรุปฉบับเดียวที่เรียบเรียงดี ตอบเป็น Markdown ใช้หัวข้อ # สำหรับชื่อเรื่อง และ ## สำหรับแต่ละหัวข้อ ใช้ตารางแบบ | เมื่อเหมาะสม ไม่ต้องเกริ่นนำ และระบุท้ายรายงานให้ตรวจทานก่อนใช้จริง ถ้าผู้ใช้ขอกราฟ หรือข้อมูลตัวเลขเหมาะแสดงเป็นกราฟ ให้ใส่บล็อกกราฟรูปแบบนี้ (type ใช้ได้: bar, hbar, line, area, pie, doughnut):\n```chart\n{"type":"bar","title":"ชื่อกราฟ","labels":["ม.ค.","ก.พ."],"series":[{"name":"ชุดข้อมูล","data":[10,20]}]}\n```\nต้องเป็น JSON ที่ถูกต้อง ตัวเลขเป็นตัวเลขจริง และห้ามแต่งตัวเลขที่ไม่ได้มาจากข้อมูลของผู้ใช้หรือเอกสารที่แนบ\n\nคำสั่งเดิมของผู้ใช้: '+v+'\n\nผลงาน:\n'+res.map(r=>'### '+r.s.n+'\n'+r.a.slice(0,12000)).join('\n\n')}]));
 w2.remove();fin(sum.text)}
 catch(e){h.pop();st.ld='idle';if(!$('#t').value)$('#t').value=v;att[me.id]=fs;showFiles();work.textContent=(ERRC[e&&e.code]||'ทำงานไม่สำเร็จ ลองส่งใหม่อีกครั้งนะคะ')+(e&&e.message&&e.code!=='not_granted'?' [รายละเอียด: '+String(e.message).slice(0,200)+']':'')+' (ใส่คำสั่งเดิมกลับในช่องให้แล้ว)'}
 finally{busy=false;$('#send').disabled=false}}
