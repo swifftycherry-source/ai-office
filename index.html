@@ -61,10 +61,10 @@ textarea{flex:1;font:inherit;color:var(--ink);background:var(--bg);border:1px so
 <div class="ctl"><button class="ghost" id="chaos">🌀 วุ่นวาย!</button><span class="hint">แตะน้อง ๆ เพื่อเลือก · แตะพื้นเพื่อสั่งวิ่ง · ลูกศร/WASD บังคับได้</span></div>
 <div class="panel">
 <div class="ph"><div><strong id="pn"></strong><span id="pr"></span></div><button class="ghost" id="clr">เริ่มงานใหม่</button></div>
-<details class="kb"><summary>📚 สอนน้อง (เพิ่มนิยาม/รหัส/เกณฑ์ของ รพ.)</summary><div class="kbi"><div id="kbl"></div><textarea id="kbt" placeholder="วางข้อความนิยาม รหัส หรือเกณฑ์ที่นี่…"></textarea><div class="kbr"><button class="clip" id="kbf">📎 เพิ่มจากไฟล์</button><input type="file" id="kbfi" hidden multiple accept=".txt,.md,.csv,.json,.docx,.xlsx,.xls"><button class="go" id="kbs">บันทึกให้น้อง</button><small id="kbm" style="color:var(--mute)"></small></div></div></details>
+<details class="kb"><summary>📚 สอนน้อง (เพิ่มนิยาม/รหัส/เกณฑ์ของ รพ.)</summary><div class="kbi"><div id="kbl"></div><textarea id="kbt" placeholder="วางข้อความนิยาม รหัส หรือเกณฑ์ที่นี่…"></textarea><div class="kbr"><button class="clip" id="kbf">📎 เพิ่มจากไฟล์</button><input type="file" id="kbfi" hidden multiple accept=".txt,.md,.csv,.json,.docx,.xlsx,.xls,.pdf"><button class="go" id="kbs">บันทึกให้น้อง</button><small id="kbm" style="color:var(--mute)"></small></div></div></details>
 <div class="log" id="log"></div>
 <div class="chips" id="chips"></div>
-<div class="att"><input type="file" id="fi" hidden multiple accept=".txt,.md,.csv,.json,.docx,.xlsx,.xls,image/*"><button class="clip" id="clip">📎 แนบไฟล์</button><span id="fl"></span><span style="font-size:13px;color:var(--mute)">Word · Excel · CSV · TXT · รูปภาพ</span></div>
+<div class="att"><input type="file" id="fi" hidden multiple accept=".txt,.md,.csv,.json,.docx,.xlsx,.xls,.pdf,image/*"><button class="clip" id="clip">📎 แนบไฟล์</button><span id="fl"></span><span style="font-size:13px;color:var(--mute)">Word · Excel · CSV · TXT · PDF · รูปภาพ</span></div>
 <div class="in"><textarea id="t" placeholder="สั่งงานพนักงานที่นี่…"></textarea><button class="go" id="send">ส่ง</button></div>
 </div>
 <p class="note">⚠️ ห้ามใส่ชื่อ-HN หรือข้อมูลที่ระบุตัวผู้ป่วย · ผลงานของ AI เป็นร่าง ควรตรวจทานก่อนใช้งานจริงทุกครั้ง</p>
@@ -217,7 +217,7 @@ const me=cur,h=hist[me.id];const fs=att[me.id]||[];let ft='';const imgs=[];fs.fo
 if(h.length===1)$('#log').innerHTML='';
 bubble('me',shown);const out=bubble('bot','กำลังทำงาน…');busy=true;$('#send').disabled=true;st[me.id]='work';draw();
 let useT=false;if(me.id==='rk'){try{useT=!!(await sample.limits()).tools}catch(e){}}
-const msgs=h.map((m,i)=>({role:m.role,content:i===0?me.p+(me.id==='rk'?rkKB(useT):'')+kbText(me.id)+'\n\nข้อควรปฏิบัติ: ห้ามขอหรือใช้ข้อมูลระบุตัวผู้ป่วย และระบุให้ผู้ใช้ตรวจทานก่อนใช้จริง ถ้าผู้ใช้ขอรายงานหรือตาราง ให้เขียนเป็น Markdown โดยใช้หัวข้อ # และตารางแบบ | คอลัมน์ | เพื่อส่งออกเป็น Word/Excel ได้ ถ้าขอสไลด์หรือพรีเซนเทชันให้เขียน # ชื่อเรื่อง แล้วใช้ ## หนึ่งหัวข้อต่อหนึ่งสไลด์ พร้อมหัวข้อย่อยสั้นๆ 3-5 ข้อ และไม่ต้องเกริ่นนำยาว\n\n---\nงานที่สั่ง: '+(m.full||m.content):(m.full||m.content)}));
+const msgs=h.map((m,i)=>({role:m.role,content:i===0?me.p+(me.id==='rk'?rkKB(useT):'')+kbText(me.id,v)+'\n\nข้อควรปฏิบัติ: ห้ามขอหรือใช้ข้อมูลระบุตัวผู้ป่วย และระบุให้ผู้ใช้ตรวจทานก่อนใช้จริง ถ้าผู้ใช้ขอรายงานหรือตาราง ให้เขียนเป็น Markdown โดยใช้หัวข้อ # และตารางแบบ | คอลัมน์ | เพื่อส่งออกเป็น Word/Excel ได้ ถ้าขอสไลด์หรือพรีเซนเทชันให้เขียน # ชื่อเรื่อง แล้วใช้ ## หนึ่งหัวข้อต่อหนึ่งสไลด์ พร้อมหัวข้อย่อยสั้นๆ 3-5 ข้อ และไม่ต้องเกริ่นนำยาว\n\n---\nงานที่สั่ง: '+(m.full||m.content):(m.full||m.content)}));
 try{const so={onText:({text})=>{if(cur===me)out.textContent=text}};if(imgs.length)so.images=imgs;if(useT)so.tools=rkTools(out);else so.cache=false;
 const r=await sample(msgs,so);
 h.push({role:'assistant',content:r.text});saveJob(me,v,r.text);st[me.id]='done';if(cur===me){out.remove();bubble('bot',r.text,true)}}
@@ -236,6 +236,9 @@ if(f.type.startsWith('image/'))return{name:f.name,blob:f};
 if(/\.(txt|md|csv|json)$/.test(n))return{name:f.name,text:await f.text()};
 if(n.endsWith('.docx')){if(!window.mammoth)await lib('https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js');const r=await mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()});return{name:f.name,text:r.value}}
 if(/\.xlsx?$/.test(n)){if(!window.XLSX)await lib('https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js');const wb=XLSX.read(await f.arrayBuffer());return{name:f.name,text:wb.SheetNames.map(s=>'## ชีต '+s+'\n'+XLSX.utils.sheet_to_csv(wb.Sheets[s])).join('\n\n')}}
+if(n.endsWith('.pdf')){if(!window.pdfjsLib){await lib('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js');const w=await(await fetch('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js')).text();pdfjsLib.GlobalWorkerOptions.workerSrc=URL.createObjectURL(new Blob([w],{type:'text/javascript'}))}
+const doc=await pdfjsLib.getDocument({data:new Uint8Array(await f.arrayBuffer())}).promise;let t='';for(let p=1;p<=doc.numPages;p++){const c=await(await doc.getPage(p)).getTextContent();t+=c.items.map(i=>i.str+(i.hasEOL?'\n':'')).join('')+'\n\n'}
+if(t.replace(/\s/g,'').length<20)throw 0;return{name:f.name,text:t}}
 throw 0}
 $('#clip').onclick=()=>$('#fi').click();
 $('#fi').onchange=async e=>{const a=att[cur.id]=att[cur.id]||[];for(const f of e.target.files){if(f.size>10e6){bubble('bot','ไฟล์ '+f.name+' ใหญ่เกิน 10 MB ค่ะ');continue}try{a.push(await readF(f))}catch(x){bubble('bot','ยังอ่านไฟล์ '+f.name+' ไม่ได้ค่ะ รองรับ Word, Excel, CSV, TXT และรูปภาพ')}}e.target.value='';showFiles()};
@@ -312,19 +315,36 @@ async function toPptx(t){if(!window.PptxGenJS)await lib('https://cdn.jsdelivr.ne
 const z=await JSZip.loadAsync(await buildPptx(t,PptxGenJS).write({outputType:'arraybuffer'}));
 for(const n of Object.keys(z.files)){if(/^ppt\/(slides\/slide\d+|theme\/theme\d+)\.xml$/.test(n)){let x=await z.file(n).async('string');x=x.replace(/charset="-122"/g,'charset="0"').replace(/charset="-120"/g,'charset="0"').replace(/<a:font script="Thai" typeface="[^"]*"\/>/g,'<a:font script="Thai" typeface="Tahoma"/>');z.file(n,x)}}
 return z.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.presentationml.presentation'})}
-const KBK=id=>'kb:'+id;
-function kbGet(id){try{return JSON.parse(localStorage.getItem(KBK(id))||'[]')}catch(e){return[]}}
-function kbSet(id,a){try{localStorage.setItem(KBK(id),JSON.stringify(a));return true}catch(e){return false}}
-function kbText(id){const a=kbGet(id);if(!a.length)return'';return '\n\n=== ความรู้อ้างอิงของหน่วย (นิยาม/รหัส/เกณฑ์ของโรงพยาบาล) ให้ยึดตามนี้เป็นหลักเมื่อขัดกับความรู้ทั่วไป ===\n'+a.map(d=>'['+d.name+']\n'+d.text).join('\n\n').slice(0,90000)+'\n=== จบความรู้อ้างอิง ==='}
-function kbShow(){const l=$('#kbl');l.innerHTML='';const a=kbGet(cur.id);if(!a.length)l.textContent='ยังไม่มีความรู้เพิ่มเติม น้องใช้ความรู้ทั่วไปอยู่';
-a.forEach((d,i)=>{const c=document.createElement('span');c.className='fchip';c.textContent='📚 '+d.name+' ('+Math.max(1,Math.round(d.text.length/1000))+'k) ';const x=document.createElement('button');x.textContent='×';x.setAttribute('aria-label','ลบ');x.onclick=()=>{a.splice(i,1);kbSet(cur.id,a);kbShow()};c.appendChild(x);l.appendChild(c);l.appendChild(document.createTextNode(' '))})}
-function kbAdd(name,text){const a=kbGet(cur.id);a.push({name,text});
-if(a.reduce((n,d)=>n+d.text.length,0)>90000){$('#kbm').textContent='ความรู้เกิน 90,000 ตัวอักษร ลบบางส่วนก่อนค่ะ';return false}
-if(!kbSet(cur.id,a)){$('#kbm').textContent='หน้านี้บันทึกในเบราว์เซอร์ไม่ได้';return false}
+const KB={};let KBI={};const BUD=120000;
+const kfeats=t=>{const a=new Set();t=t.toLowerCase();(t.match(/[ก-๙]+/g)||[]).forEach(w=>{for(let i=0;i+3<=w.length;i++)a.add(w.substr(i,3))});(t.match(/[a-z0-9][a-z0-9\-]{2,}/g)||[]).forEach(w=>a.add(w));return a};
+function idb(){return new Promise((ok,no)=>{const r=indexedDB.open('aioffice',1);r.onupgradeneeded=()=>r.result.createObjectStore('kb');r.onsuccess=()=>ok(r.result);r.onerror=()=>no(r.error)})}
+async function idbGet(id){try{const d=await idb();return await new Promise((ok,no)=>{const q=d.transaction('kb').objectStore('kb').get(id);q.onsuccess=()=>ok(q.result);q.onerror=()=>no(q.error)})}catch(e){return undefined}}
+async function idbSet(id,v){const d=await idb();return new Promise((ok,no)=>{const t=d.transaction('kb','readwrite');t.objectStore('kb').put(v,id);t.oncomplete=ok;t.onerror=()=>no(t.error)})}
+async function kbLoad(){for(const s of STAFF){let a=await idbGet(s.id);if(!a){a=[];try{const o=JSON.parse(localStorage.getItem('kb:'+s.id)||'[]');if(o.length){a=o;try{await idbSet(s.id,a);localStorage.removeItem('kb:'+s.id)}catch(e){}}}catch(e){}}KB[s.id]=a}}
+const kbGet=id=>KB[id]||[];
+async function kbSet(id,a){KB[id]=a;delete KBI[id];try{await idbSet(id,a);return true}catch(e){try{localStorage.setItem('kb:'+id,JSON.stringify(a));return true}catch(e2){return false}}}
+function kbIdx(id){if(KBI[id])return KBI[id];const ch=[];
+kbGet(id).forEach(d=>{let cur='';const push=()=>{if(cur.trim())ch.push({n:d.name,t:cur.trim()});cur=''};
+d.text.split(/\n{2,}/).forEach(p=>{if(cur&&cur.length+p.length>1500)push();if(p.length>2000){for(let i=0;i<p.length;i+=1500){cur+=p.slice(i,i+1500);push()}}else cur+=(cur?'\n\n':'')+p});push()});
+const df={};ch.forEach(c=>{c.f=kfeats(c.t);c.f.forEach(x=>df[x]=(df[x]||0)+1)});
+return KBI[id]={ch,df,total:ch.reduce((n,c)=>n+c.t.length,0)}}
+function kbText(id,q){if(!kbGet(id).length)return'';const I=kbIdx(id);let pick=I.ch,note='';
+if(I.total>BUD){const Q=kfeats(q||''),N=I.ch.length,sc=I.ch.map(c=>{let n=0;Q.forEach(x=>{if(c.f.has(x))n+=Math.log(N/(1+(I.df[x]||0)))});return[n,c]}).sort((a,b)=>b[0]-a[0]);let tot=0;const keep=new Set();
+for(const[n,c]of sc){if(tot+c.t.length>BUD)continue;keep.add(c);tot+=c.t.length}pick=I.ch.filter(c=>keep.has(c));note=' (คัดเฉพาะส่วนที่เกี่ยวข้องกับงานนี้ จากความรู้ทั้งหมด '+Math.round(I.total/1000)+'k ตัวอักษร)'}
+let last='';return '\n\n=== ความรู้อ้างอิงของหน่วย (นิยาม/รหัส/เกณฑ์ของโรงพยาบาล)'+note+' ให้ยึดตามนี้เป็นหลักเมื่อขัดกับความรู้ทั่วไป ===\n'+pick.map(c=>{const h=c.n!==last?'['+c.n+']\n':'';last=c.n;return h+c.t}).join('\n\n')+'\n=== จบความรู้อ้างอิง ==='}
+function kbShow(){const l=$('#kbl');l.innerHTML='';const a=kbGet(cur.id);
+if(!a.length){l.textContent='ยังไม่มีความรู้เพิ่มเติม น้องใช้ความรู้ทั่วไปอยู่';return}
+a.forEach((d,i)=>{const c=document.createElement('span');c.className='fchip';c.textContent='📚 '+d.name+' ('+Math.max(1,Math.round(d.text.length/1000))+'k) ';const x=document.createElement('button');x.textContent='×';x.setAttribute('aria-label','ลบ');x.onclick=async()=>{const b=kbGet(cur.id).slice();b.splice(i,1);await kbSet(cur.id,b);kbShow()};c.appendChild(x);l.appendChild(c);l.appendChild(document.createTextNode(' '))});
+const tot=a.reduce((n,d)=>n+d.text.length,0),m=document.createElement('div');m.style.cssText='margin-top:6px;color:var(--mute);font-size:13px';
+m.textContent='รวม '+Math.round(tot/1000).toLocaleString()+'k ตัวอักษร'+(tot>BUD?' · ยาวกว่าที่ส่งให้น้องได้ในครั้งเดียว ระบบจะคัดเฉพาะส่วนที่เกี่ยวกับงานให้อัตโนมัติ':' · ส่งให้น้องครบทั้งหมดทุกงาน');l.appendChild(m)}
+async function kbAdd(name,text){const a=kbGet(cur.id).slice();a.push({name,text});
+if(!await kbSet(cur.id,a)){$('#kbm').textContent='บันทึกในเบราว์เซอร์ไม่ได้ (พื้นที่เต็มหรือโหมดส่วนตัว)';return false}
 $('#kbm').textContent='บันทึกแล้ว ✓ น้องจะใช้ในงานถัดไป';kbShow();return true}
-$('#kbs').onclick=()=>{const v=$('#kbt').value.trim();if(v&&kbAdd('ข้อความที่วาง '+new Date().toLocaleDateString('th-TH'),v))$('#kbt').value=''};
+$('#kbs').onclick=async()=>{const v=$('#kbt').value.trim();if(v&&await kbAdd('ข้อความที่วาง '+new Date().toLocaleDateString('th-TH'),v))$('#kbt').value=''};
 $('#kbf').onclick=()=>$('#kbfi').click();
-$('#kbfi').onchange=async e=>{for(const f of e.target.files){try{const r=await readF(f);if(r.text)kbAdd(r.name,r.text);else $('#kbm').textContent='ไฟล์ '+f.name+' ใช้ไม่ได้ (รองรับ Word/Excel/CSV/TXT)'}catch(x){$('#kbm').textContent='อ่านไฟล์ '+f.name+' ไม่ได้ค่ะ'}}e.target.value=''};
+$('#kbfi').onchange=async e=>{const fl=[...e.target.files];e.target.value='';for(const f of fl){$('#kbm').textContent='กำลังอ่าน '+f.name+'…';try{const r=await readF(f);if(r.text)await kbAdd(r.name,r.text);else $('#kbm').textContent='ไฟล์ '+f.name+' ใช้ไม่ได้ (รองรับ Word/Excel/CSV/TXT/PDF)'}catch(x){$('#kbm').textContent='อ่านไฟล์ '+f.name+' ไม่ได้ค่ะ (PDF ที่สแกนเป็นรูปจะอ่านข้อความไม่ได้)'}}};
+kbLoad().then(kbShow);
+
 const fmtD=ts=>{const d=new Date(ts);return d.toLocaleDateString('th-TH',{day:'numeric',month:'short',year:'2-digit'})+' '+d.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})};
 function stats(list){const by={};STAFF.forEach(s=>by[s.id]=0);const sev={};list.forEach(j=>{by[j.staff]=(by[j.staff]||0)+1;if(j.sev)sev[j.sev]=(sev[j.sev]||0)+1});return{by,sev}}
 function sumMd(){const s=stats(JOBS),cl=x=>String(x).replace(/\|/g,'/').replace(/\s+/g,' ');
@@ -374,7 +394,7 @@ $('#cs').onclick=async()=>{localStorage.setItem('gu',$('#cu').value.trim());loca
 const GUARD='\n\nข้อควรปฏิบัติ: ห้ามขอหรือใช้ข้อมูลระบุตัวผู้ป่วย และระบุให้ผู้ใช้ตรวจทานก่อนใช้จริง ถ้าผู้ใช้ขอรายงานหรือตาราง ให้เขียนเป็น Markdown โดยใช้หัวข้อ # และตารางแบบ | คอลัมน์ | เพื่อส่งออกเป็น Word/Excel ได้ ถ้าขอสไลด์หรือพรีเซนเทชันให้เขียน # ชื่อเรื่อง แล้วใช้ ## หนึ่งหัวข้อต่อหนึ่งสไลด์ พร้อมหัวข้อย่อยสั้นๆ 3-5 ข้อ และไม่ต้องเกริ่นนำยาว\n\n---\nงานที่สั่ง: ';
 const ROSTER=()=>STAFF.filter(s=>s.id!=='ld').map(s=>s.id+' = '+s.n+' ('+s.r+')').join('\n');
 const leadPrompt=()=>'คุณคือหัวหน้าทีมของหน่วยโรคหลอดเลือดสมอง โรงพยาบาลนครปฐม หน้าที่คือรับงานจากผู้ใช้ แตกเป็นงานย่อย แล้วมอบหมายให้พนักงานที่เหมาะสม\nพนักงานที่มี (id = ชื่อ (หน้าที่)):\n'+ROSTER()+'\nกติกา: เลือกพนักงานเท่าที่จำเป็น ไม่เกิน 4 งาน คำสั่งของแต่ละงานย่อยต้องครบถ้วนและมีบริบทที่จำเป็นทั้งหมด เพราะพนักงานไม่เห็นข้อความของผู้ใช้ ห้ามใส่ข้อมูลระบุตัวผู้ป่วย ถ้างานง่ายและไม่ต้องมอบหมาย ให้ตอบเองด้วย {"direct":"คำตอบ"}\nตอบเป็น JSON เท่านั้น ห้ามมีข้อความอื่นหรือ markdown fence ตามรูปแบบ {"summary":"สรุปแผนสั้นๆ","tasks":[{"staff":"id","task":"คำสั่ง"}]}';
-async function askStaff(s,task){return gsample([{role:'user',content:s.p+(s.id==='rk'?rkKB(false):'')+kbText(s.id)+GUARD+task}])}
+async function askStaff(s,task){return gsample([{role:'user',content:s.p+(s.id==='rk'?rkKB(false):'')+kbText(s.id,task)+GUARD+task}])}
 async function retry(fn){try{return await fn()}catch(e){if(e&&e.code==='rate_limited'){await new Promise(r=>setTimeout(r,12000));return await fn()}throw e}}
 async function leadSend(){const v=$('#t').value.trim();if(!v||busy)return;const me=cur,h=hist[me.id];
 const fs=att[me.id]||[];let ft='';fs.forEach(f=>{if(!f.blob)ft+='\n\n[ไฟล์แนบ: '+f.name+']\n'+f.text.slice(0,40000)});
