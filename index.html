@@ -52,7 +52,7 @@ textarea{flex:1;font:inherit;color:var(--ink);background:var(--bg);border:1px so
 <body>
 <header>
 <h1>🏢 สำนักงาน AI</h1>
-<p>ออฟฟิศพิกเซลที่น้อง ๆ เดินวิ่งกันจริง · เลือกพนักงานแล้วสั่งงานได้เลย</p>
+<p>ออฟฟิศที่น้อง ๆ เดินวิ่งกันจริง · สั่งงานตรงหรือให้หัวหน้าทีมจ่ายงานให้</p>
 <nav class="tabs"><button id="t1" class="on">🏢 ออฟฟิศ</button><button id="t2">📋 ประวัติและสรุป</button></nav>
 <details class="kb" id="cfg" style="margin-top:10px;border:1px solid var(--line);border-radius:12px;background:var(--card)"><summary>⚙️ ตั้งค่าการเชื่อมต่อ (Apps Script + Gemini)</summary><div class="kbi"><input id="cu" placeholder="วาง Web app URL ของ Apps Script"><input id="ck" type="password" placeholder="รหัสผ่าน (PASSCODE ที่ตั้งไว้ใน Script Properties)"><div class="kbr"><button class="go" id="cs">บันทึกและทดสอบ</button><small id="cm" style="color:var(--mute)"></small></div></div></details>
 </header>
@@ -88,13 +88,14 @@ const STAFF=[
 {id:'da',k:'cat',col:'#6ea8d8',dx:2,dy:3.6,n:'พี่ข้อมูล',r:'นักวิเคราะห์ข้อมูล',p:'คุณคือนักวิเคราะห์ข้อมูลของหน่วยโรคหลอดเลือดสมอง ช่วยออกแบบตัวชี้วัด (เช่น door-to-needle) สูตรคำนวณ โครงสร้างตาราง Excel และแปลผลข้อมูลแบบเข้าใจง่าย ตอบเป็นภาษาไทย ถ้าต้องคำนวณให้แสดงวิธีทีละขั้น',c:['ออกแบบตาราง Excel ติดตามตัวชี้วัด','อธิบายวิธีคำนวณตัวชี้วัด','ช่วยแปลผลตัวเลขที่ฉันวางให้']},
 {id:'sl',k:'bear',col:'#c58b5c',dx:4.2,dy:4.1,n:'น้องสไลด์',r:'ผู้ช่วยทำสไลด์',p:'คุณคือผู้ช่วยทำสไลด์นำเสนอ แปลงเนื้อหาเป็นโครงสไลด์ ระบุหัวข้อ ข้อความสั้นๆ ต่อสไลด์ และคำแนะนำภาพ/กราฟ พร้อมบทพูดสั้นๆ ตอบเป็นภาษาไทย',c:['ทำโครงสไลด์ 10 แผ่น','ย่อเนื้อหาเป็นสไลด์','เขียนบทพูดประกอบสไลด์']},
 {id:'rk',k:'panda',n:'น้อง Risk',r:'ผู้ช่วยลงรหัสและระดับความเสี่ยง',p:'คุณคือเจ้าหน้าที่ลงรหัสความเสี่ยง/อุบัติการณ์ของหอผู้ป่วยโรคหลอดเลือดสมอง โรงพยาบาลนครปฐม เมื่อผู้ใช้เล่าเหตุการณ์ ให้ (1) สรุปเหตุการณ์ (2) จัดกลุ่ม/ประเภทความเสี่ยงทางคลินิก (เช่น ยา สารน้ำ การติดเชื้อ การพลัดตกหกล้ม แผลกดทับ การระบุตัวผู้ป่วย การสื่อสาร) (3) กำหนดระดับความรุนแรงเป็นตัวอักษร A–I ตามเกณฑ์ที่ใช้ในโรงพยาบาลไทย (A=เหตุการณ์ที่อาจเกิดความคลาดเคลื่อน, B=เกิดแต่ไม่ถึงผู้ป่วย, C=ถึงผู้ป่วยแต่ไม่เกิดอันตราย, D=ถึงผู้ป่วยต้องเฝ้าระวังเพิ่ม, E=อันตรายชั่วคราวต้องรักษา, F=ต้องนอนโรงพยาบาลหรือนานขึ้น, G=พิการถาวร, H=ต้องช่วยชีวิต, I=เสียชีวิต) (4) ประเมินระดับความเสี่ยงตามโอกาสเกิด×ผลกระทบ (ต่ำ/กลาง/สูง/สูงมาก) พร้อมเหตุผล (5) เสนอรหัสความเสี่ยง 1-3 รหัสที่ใกล้ที่สุดจากทะเบียนรหัสของโรงพยาบาลที่แนบมาท้ายคำสั่ง (ระบุรหัส ชื่อ กลุ่ม/หมวด/ประเภท และเหตุผลที่เลือก) พร้อมมาตรการป้องกัน ห้ามสร้างรหัสขึ้นเอง ถ้าไม่มีรหัสที่ตรงให้บอกว่าไม่พบและเสนอรหัสที่ใกล้เคียงที่สุด ตอบเป็นตารางสั้นๆ ถ้าข้อมูลไม่พอให้ถามกลับ ไม่เดารหัสเฉพาะของ รพ. ถ้าไม่แน่ใจให้ระบุว่าเป็นข้อเสนอและให้ตรวจเทียบกับคู่มือความเสี่ยงฉบับล่าสุดของโรงพยาบาล',c:['ลงรหัสความเสี่ยงและระดับความรุนแรงเหตุการณ์นี้ (เล่าเหตุการณ์ต่อท้าย)','ประเมินระดับความเสี่ยงตาม matrix','เสนอมาตรการป้องกันซ้ำ']},
-{id:'tm',k:'frog',n:'พี่ทีมงาน',r:'ผู้ช่วยหาทีมและวางโครงการ',p:'คุณคือผู้ช่วยจัดทีมและวางโครงการพัฒนาคุณภาพ/นวัตกรรมของหอผู้ป่วยโรคหลอดเลือดสมอง ช่วยกำหนดบทบาททีม (หัวหน้าโครงการ ที่ปรึกษา สหวิชาชีพ เช่น แพทย์ พยาบาล เภสัชกร นักกายภาพบำบัด ไอที งานคุณภาพ ผู้ป่วยและญาติ) ทำตาราง RACI วางแผนตามวงจร PDCA ตารางเวลา ตัวชี้วัด และร่างโครงการ (หลักการและเหตุผล วัตถุประสงค์ วิธีดำเนินการ ตัวชี้วัด ผลที่คาดว่าจะได้รับ) ห้ามสมมติชื่อบุคคลจริง ให้ใช้ชื่อตำแหน่ง/บทบาทเท่านั้น และถามผู้ใช้ถ้าต้องการข้อมูลทีมที่มีอยู่',c:['จัดทีมโครงการพร้อมบทบาท (RACI)','ร่างโครงการ QI ตั้งแต่หลักการจนถึงตัวชี้วัด','วางตารางเวลาโครงการ 6 เดือน']}
+{id:'tm',k:'frog',n:'พี่ทีมงาน',r:'ผู้ช่วยหาทีมและวางโครงการ',p:'คุณคือผู้ช่วยจัดทีมและวางโครงการพัฒนาคุณภาพ/นวัตกรรมของหอผู้ป่วยโรคหลอดเลือดสมอง ช่วยกำหนดบทบาททีม (หัวหน้าโครงการ ที่ปรึกษา สหวิชาชีพ เช่น แพทย์ พยาบาล เภสัชกร นักกายภาพบำบัด ไอที งานคุณภาพ ผู้ป่วยและญาติ) ทำตาราง RACI วางแผนตามวงจร PDCA ตารางเวลา ตัวชี้วัด และร่างโครงการ (หลักการและเหตุผล วัตถุประสงค์ วิธีดำเนินการ ตัวชี้วัด ผลที่คาดว่าจะได้รับ) ห้ามสมมติชื่อบุคคลจริง ให้ใช้ชื่อตำแหน่ง/บทบาทเท่านั้น และถามผู้ใช้ถ้าต้องการข้อมูลทีมที่มีอยู่',c:['จัดทีมโครงการพร้อมบทบาท (RACI)','ร่างโครงการ QI ตั้งแต่หลักการจนถึงตัวชี้วัด','วางตารางเวลาโครงการ 6 เดือน']},
+{id:'ld',k:'robot',n:'หัวหน้าทีม',r:'หัวหน้าทีม · จ่ายงานให้น้อง ๆ',p:'',c:['จัดทีมทำโครงการ QI เรื่อง … (เล่ารายละเอียดต่อท้าย)','วิเคราะห์เหตุการณ์ ลงรหัสความเสี่ยง แล้วทำรายงานพร้อมสไลด์']}
 ];
 const $=s=>document.querySelector(s);
 const hist={},st={};STAFF.forEach(s=>{hist[s.id]=[];st[s.id]='idle'});
 let cur=STAFF[0],busy=false,sample=null;
 const W=320,H=240,S=3,cv=$('#room'),cx=cv.getContext('2d');
-const DK={sec:[20,62],qi:[92,62],ha:[164,62],da:[236,62],sl:[20,122],rk:[92,122],tm:[236,122]};
+const DK={sec:[20,62],qi:[92,62],ha:[164,62],da:[236,62],sl:[20,122],rk:[92,122],tm:[236,122],ld:[164,122]};
 const HM={};Object.keys(DK).forEach(i=>HM[i]=[DK[i][0]+24,DK[i][1]+33]);
 const K={robot:['#9fd8d4','#5fa8a2','#2a7f7a'],fox:['#f09a50','#c1702f','#a24f1c'],bunny:['#f1eef6','#c9c3d8','#7d6bb8'],cat:['#8fb4de','#668bb8','#3f6591'],bear:['#c58b5c','#8f5f38','#6d4527'],panda:['#f4f4f4','#bdbdbd','#3a3a3a'],frog:['#8fd06a','#5fa341','#2f7a2a']};
 const WP=[[60,172],[120,175],[160,190],[210,180],[260,150],[40,165],[150,135],[165,150],[290,110],[300,200],[100,215],[190,150]];
@@ -115,7 +116,7 @@ const pl=(x,y)=>{R(x+1,y+9,8,6,'#a0522d');R(x-2,y+1,14,9,'#3f9a4f');R(x+1,y-3,8,
 R(268,170,24,20,'#c9a26b');R(268,170,24,3,'#e0bd8a');R(279,170,2,20,'#a9824d');R(274,152,18,18,'#d4ad78');R(274,152,18,3,'#e8c796');
 R(12,196,58,24,'#2f4670');R(12,190,58,10,'#3c5a8a');R(14,200,26,16,'#4a6aa0');R(42,200,26,16,'#4a6aa0');
 R(128,202,54,14,'#8a5c30');R(128,200,54,3,'#b9824a');R(136,190,10,11,'#444');R(138,192,6,4,'#d94f4f');R(160,196,5,6,'#fff');
-R(198,198,24,14,'#d8d8d8');R(198,206,24,6,'#aaa');R(203,194,14,5,'#fff');
+R(180,138,16,3,'#e8c04a');R(198,198,24,14,'#d8d8d8');R(198,206,24,6,'#aaa');R(203,194,14,5,'#fff');
 })();
 const chars=STAFF.map((s,i)=>{const w=WP[(i*2+1)%WP.length];return{id:s.id,k:s.k,n:s.n,x:w[0],y:w[1],dir:0,fr:0,wait:Math.random()*2,tg:null,man:null,sit:false,moving:false,bub:'',bubT:0,dt:0}});
 const clampP=(x,y)=>[Math.max(8,Math.min(312,x)),Math.max(46,Math.min(236,y))];
@@ -139,27 +140,50 @@ else if(g===c.tg){c.tg=null;c.wait=chaos?.15:1+Math.random()*2.5;if(Math.random(
 else{c.sit=true;c.dir=1}});
 if(chaos&&Math.random()<dt*10){const c=chars[Math.random()*chars.length|0];paper.push({x:c.x,y:c.y-14,vx:Math.random()*40-20,vy:-30-Math.random()*20,l:1.2})}
 for(let i=paper.length-1;i>=0;i--){const p=paper[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=90*dt;p.l-=dt;if(p.l<=0)paper.splice(i,1)}}
-function spr(c,t){const x=c.x|0,y=c.y|0,k=K[c.k],s=st[c.id],hop=(s==='done'&&c.sit)?-(Math.abs(Math.sin(t/160))*4|0):0,f=Math.floor(c.fr)%2,yy=hop+(c.moving&&f?-1:0);
-const R=(a,b,w,h,col)=>{cx.fillStyle=col;cx.fillRect(x+a,y+b,w,h)};
-R(-5,-1,10,2,'rgba(0,0,0,.25)');
-if(!c.sit){R(-4,-5+hop,3,5-(c.moving&&f?1:0),'#232c3b');R(1,-5+hop,3,5-(c.moving&&!f?1:0),'#232c3b')}
-R(-5,-12+yy,10,8,k[2]);
-const sw=c.moving?(f?1:-1):0,ty=(s==='work'&&c.sit)?(Math.floor(t/120)%2):0;
-R(-7,-11+yy+(c.sit?-2:sw),2,6,k[2]);R(5,-11+yy+(c.sit?-2:-sw),2,6,k[2]);
-R(-7,-5+yy+(c.sit?-2+ty:sw),2,2,k[0]);R(5,-5+yy+(c.sit?-1-ty:-sw),2,2,k[0]);
-const hy=-21+yy;
-R(-5,hy,10,9,k[0]);R(-5,hy,10,2,k[1]);
-if(c.k==='fox'||c.k==='cat'){R(-5,hy-3,3,3,k[0]);R(2,hy-3,3,3,k[0]);R(-4,hy-2,1,2,k[1]);R(3,hy-2,1,2,k[1])}
-if(c.k==='bunny'){R(-4,hy-8,2,8,k[0]);R(2,hy-8,2,8,k[0]);R(-3,hy-6,1,5,'#f4b6c8');R(3,hy-6,1,5,'#f4b6c8')}
-if(c.k==='bear'||c.k==='panda'){const ec=c.k==='panda'?k[2]:k[0];R(-6,hy-2,3,3,ec);R(3,hy-2,3,3,ec)}
-if(c.k==='frog'){R(-5,hy-3,4,4,k[0]);R(1,hy-3,4,4,k[0]);R(-4,hy-2,2,2,'#fff');R(2,hy-2,2,2,'#fff')}
-if(c.k==='robot'){R(-1,hy-4,2,4,'#555');R(-2,hy-6,4,3,'#f2c14e')}
-if(c.dir===1)R(-5,hy,10,9,k[1]);
-else{const e='#222';
-if(c.dir===0){R(-3,hy+4,2,2,e);R(1,hy+4,2,2,e);R(-1,hy+7,2,1,'#a33')}
-if(c.dir===2){R(-4,hy+4,2,2,e);R(1,hy,4,9,k[1])}
-if(c.dir===3){R(2,hy+4,2,2,e);R(-5,hy,4,9,k[1])}}
-const ly=y-27+yy-(c.k==='bunny'?7:0);
+const LOOK={
+sec:{sk:'#f6d3b3',hair:'#4a3024',st:'bun',top:'#e58fae',pants:'#5a4a6a',g:1},
+qi:{sk:'#f1caa6',hair:'#2a2118',st:'short',top:'#3d6fb5',pants:'#2b3445',gl:1,tie:'#c0392b'},
+ha:{sk:'#f6d3b3',hair:'#6a432d',st:'long',top:'#8c7ad6',pants:'#3b3f55',g:1},
+da:{sk:'#e8bf9a',hair:'#1f1f2e',st:'spiky',top:'#2f7a74',pants:'#2b3445'},
+sl:{sk:'#f8d9bd',hair:'#d5668a',st:'bob',top:'#f0b429',pants:'#4a4a58',g:1},
+rk:{sk:'#f6d3b3',hair:'#241a18',st:'bob',top:'#3aa6a0',pants:'#2f8a85',g:1},
+tm:{sk:'#e8bf9a',hair:'#3a2a20',st:'beanie',hat:'#e8833a',top:'#b5543a',pants:'#2b3445'},
+ld:{sk:'#f1caa6',hair:'#17171f',st:'short',top:'#243a5e',pants:'#1c2740',tie:'#c0392b',sc:1.1,badge:1}};
+function spr(c,t){const L=LOOK[c.id]||LOOK.sec,s=st[c.id],hop=(s==='done'&&c.sit)?-Math.abs(Math.sin(t/160))*4:0,f=Math.floor(c.fr)%2,mv=c.moving,d=c.dir,sit=c.sit?11:0,oy=sit+hop+(mv&&f?-.8:0);
+const rr=(x,y,w,h,r)=>{cx.beginPath();cx.moveTo(x+r,y);cx.arcTo(x+w,y,x+w,y+h,r);cx.arcTo(x+w,y+h,x,y+h,r);cx.arcTo(x,y+h,x,y,r);cx.arcTo(x,y,x+w,y,r);cx.closePath()};
+const lg=(x0,y0,x1,y1,a,b)=>{const g=cx.createLinearGradient(x0,y0,x1,y1);g.addColorStop(0,a);g.addColorStop(1,b);return g};
+const sh=(h,k)=>{const n=parseInt(h.slice(1),16),m=v=>Math.max(0,Math.min(255,Math.round(v*k)));return 'rgb('+m(n>>16)+','+m(n>>8&255)+','+m(n&255)+')'};
+const arc=(x,y,r)=>{cx.beginPath();cx.arc(x,y,r,0,7)};
+cx.save();cx.translate(c.x,c.y);cx.scale(L.sc||1,L.sc||1);
+cx.fillStyle='rgba(0,0,0,.22)';cx.beginPath();cx.ellipse(0,0,7,2.4,0,0,7);cx.fill();
+if(!sit){const a=mv?(f?1.4:0):0,b=mv?(f?0:1.4):0;cx.fillStyle=L.pants;rr(-4.2,-7+hop,3.4,7-a,1.2);cx.fill();rr(.8,-7+hop,3.4,7-b,1.2);cx.fill();cx.fillStyle='#222';rr(-4.6,-1.4-a,4,1.6,.8);cx.fill();rr(.6,-1.4-b,4,1.6,.8);cx.fill()}
+cx.fillStyle=lg(-5,-15+oy,5,-6+oy,sh(L.top,1.18),sh(L.top,.78));rr(-5.5,-15+oy,11,9.5,3);cx.fill();
+if(L.tie&&d!==1){cx.fillStyle='#fff';cx.beginPath();cx.moveTo(-2,-15+oy);cx.lineTo(2,-15+oy);cx.lineTo(0,-12.5+oy);cx.fill();cx.fillStyle=L.tie;cx.beginPath();cx.moveTo(-.9,-13+oy);cx.lineTo(.9,-13+oy);cx.lineTo(1.2,-8+oy);cx.lineTo(0,-6.8+oy);cx.lineTo(-1.2,-8+oy);cx.fill()}
+if(L.badge&&d!==1){cx.fillStyle='#f2c14e';arc(3.2,-12+oy,1.1);cx.fill()}
+const sw=mv?(f?1.6:-1.6):0,ty=(s==='work'&&c.sit)?(Math.floor(t/120)%2?1:0):0;
+[-1,1].forEach(sd=>{let hx=sd*6.6,hy=-8+oy-sd*sw;if(c.sit){hx=sd*3.8;hy=-12.5+oy-ty*sd*.8}
+cx.strokeStyle=sh(L.top,.88);cx.lineWidth=2.6;cx.lineCap='round';cx.beginPath();cx.moveTo(sd*5.4,-13+oy);cx.lineTo(hx,hy);cx.stroke();cx.fillStyle=L.sk;arc(hx,hy,1.5);cx.fill()});
+const hc=-22+oy;
+cx.fillStyle=L.hair;if(L.st==='long'){rr(-8.8,hc-1,17.6,14,4);cx.fill()}if(L.st==='bob'){rr(-8.9,hc-2,17.8,11,4.5);cx.fill()}
+cx.fillStyle=sh(L.sk,.93);arc(-8.2,hc+.8,1.7);cx.fill();arc(8.2,hc+.8,1.7);cx.fill();
+const hg=cx.createRadialGradient(-2.5,hc-3,1,0,hc,9.5);hg.addColorStop(0,sh(L.sk,1.06));hg.addColorStop(.7,L.sk);hg.addColorStop(1,sh(L.sk,.86));
+cx.fillStyle=hg;arc(0,hc,8.2);cx.fill();cx.strokeStyle='rgba(0,0,0,.16)';cx.lineWidth=.5;cx.stroke();
+const hat=L.st==='beanie';
+if(d!==1&&!hat){cx.fillStyle=lg(-8,hc-9,8,hc,sh(L.hair,1.6),L.hair);cx.beginPath();cx.arc(0,hc-.4,8.7,Math.PI,2*Math.PI);cx.quadraticCurveTo(0,hc-6.2,-8.7,hc-.4);cx.closePath();cx.fill();
+if(L.st==='long'||L.st==='bob'){cx.fillStyle=L.hair;cx.fillRect(-8.9,hc-1,2.2,6);cx.fillRect(6.7,hc-1,2.2,6)}}
+if(d===1&&!hat){cx.fillStyle=lg(-8,hc-9,8,hc+6,sh(L.hair,1.5),L.hair);arc(0,hc-.2,8.7);cx.fill()}
+cx.fillStyle=L.hair;
+if(L.st==='bun'){arc(0,hc-10.6,3.4);cx.fill()}
+if(L.st==='spiky'){[-5,0,5].forEach((x,i)=>{cx.beginPath();cx.moveTo(x-2.6,hc-7);cx.lineTo(x+(i-1)*.8,hc-12.5+(i===1?-1:0));cx.lineTo(x+2.6,hc-7);cx.fill()})}
+if(hat){cx.fillStyle=lg(-8,hc-9,8,hc-3,sh(L.hat,1.2),sh(L.hat,.85));cx.beginPath();cx.arc(0,hc-1.2,9,Math.PI,2*Math.PI);cx.closePath();cx.fill();cx.fillStyle=sh(L.hat,.7);rr(-9.2,hc-3.6,18.4,2.8,1.2);cx.fill();cx.fillStyle='#fff';arc(0,hc-10.6,2.1);cx.fill()}
+if(d!==1){const ex=d===0?[-3.2,3.2]:d===2?[-4.6]:[4.6];
+ex.forEach(x=>{cx.fillStyle='#2a1f1a';cx.beginPath();cx.ellipse(x,hc+1,1.5,2,0,0,7);cx.fill();cx.fillStyle='#fff';arc(x-.5,hc+.2,.65);cx.fill();
+cx.strokeStyle=L.g?'#2a1f1a':L.hair;cx.lineWidth=L.g?.5:.75;cx.beginPath();if(L.g){cx.moveTo(x-1.5,hc-1.1);cx.lineTo(x-2.3,hc-1.8)}else{cx.moveTo(x-1.9,hc-1.9);cx.lineTo(x+1.9,hc-2.3)}cx.stroke()});
+cx.fillStyle='rgba(255,110,130,.42)';(d===0?[-5.6,5.6]:d===2?[-6.3]:[6.3]).forEach(x=>{cx.beginPath();cx.ellipse(x,hc+3.7,1.6,1,0,0,7);cx.fill()});
+cx.strokeStyle='#b4534f';cx.lineWidth=.6;cx.beginPath();cx.arc(d===0?0:d===2?-3:3,hc+4.2,1.3,.15*Math.PI,.85*Math.PI);cx.stroke();
+if(L.gl){cx.strokeStyle='#33343c';cx.lineWidth=.55;ex.forEach(x=>{arc(x,hc+1,2.6);cx.stroke()});if(d===0){cx.beginPath();cx.moveTo(-.6,hc+1);cx.lineTo(.6,hc+1);cx.stroke()}}}
+cx.restore();
+const x=c.x,ly=c.y-38+oy+(sit?0:0);
 cx.textAlign='center';cx.font='bold 6px Sarabun,sans-serif';cx.lineWidth=2;cx.strokeStyle='#3a2410';cx.fillStyle=c.id===cur.id?'#ffe27a':'#fff';
 const tx=c.n+(s==='work'?' ⌨️':s==='done'?' ✓':'');cx.strokeText(tx,x,ly);cx.fillText(tx,x,ly);
 if(c.id===cur.id){cx.fillStyle='#ffe27a';const b=Math.sin(t/200)*1.5;cx.fillRect(x-2,ly-12+b,4,2);cx.fillRect(x-1,ly-10+b,2,2)}
@@ -168,7 +192,7 @@ function rend(t){cx.setTransform(S,0,0,S,0,0);cx.drawImage(bgc,0,0,W,H);
 [...chars].sort((a,b)=>a.y-b.y).forEach(c=>spr(c,t));
 paper.forEach(p=>{cx.fillStyle='#fff';cx.fillRect(p.x|0,p.y|0,3,4)})}
 function logical(e){const r=cv.getBoundingClientRect();return[(e.clientX-r.left)/r.width*W,(e.clientY-r.top)/r.height*H]}
-cv.addEventListener('pointerdown',e=>{const[px,py]=logical(e);const hit=[...chars].sort((a,b)=>b.y-a.y).find(c=>Math.abs(px-c.x)<9&&py>c.y-30&&py<c.y+4);
+cv.addEventListener('pointerdown',e=>{const[px,py]=logical(e);const hit=[...chars].sort((a,b)=>b.y-a.y).find(c=>Math.abs(px-c.x)<10&&py>c.y-38&&py<c.y+4);
 if(hit){pick(STAFF.find(s=>s.id===hit.id));hit.bub='👋';hit.bubT=1.2}
 else{chars.find(c=>c.id===cur.id).man=clampP(px,py)}});
 const KM={ArrowLeft:'l',a:'l',ArrowRight:'r',d:'r',ArrowUp:'u',w:'u',ArrowDown:'d',s:'d'};
@@ -186,7 +210,7 @@ if(copy)addExp(d,text);$('#log').appendChild(d);$('#log').scrollTop=1e9;return d
 function render(){$('#log').innerHTML='';const h=hist[cur.id];
 if(!h.length)bubble('bot','สวัสดีค่ะ '+cur.n+' ('+cur.r+') พร้อมรับงานค่ะ มีอะไรให้ช่วยคะ?');
 h.forEach(m=>bubble(m.role==='user'?'me':'bot',m.content,m.role!=='user'))}
-async function send(){const v=$('#t').value.trim();if(!v||busy)return;
+async function send(){if(cur.id==='ld')return leadSend();const v=$('#t').value.trim();if(!v||busy)return;
 if(!sample)sample=gsample;
 if(!sample){bubble('bot','ขออภัยค่ะ หน้านี้ยังไม่ได้รับอนุญาตให้เรียก AI (เปิดผ่าน claude.ai เพื่อใช้งาน)');return}
 const me=cur,h=hist[me.id];const fs=att[me.id]||[];let ft='';const imgs=[];fs.forEach(f=>{if(f.blob)imgs.push(f.blob);else ft+='\n\n[ไฟล์แนบ: '+f.name+']\n'+f.text.slice(0,60000)});const shown=v+(fs.length?'\n📎 '+fs.map(f=>f.name).join(', '):'');h.push({role:'user',content:shown,full:v+ft});att[me.id]=[];showFiles();$('#t').value='';
@@ -347,6 +371,35 @@ gsample.limits=async()=>({tools:false,images:true});
 const DLX={save:async({filename,data})=>{const a=document.createElement('a');a.href=URL.createObjectURL(data);a.download=filename;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000)}};
 $('#cu').value=CFG.u;$('#ck').value=CFG.k;if(!CFG.u)$('#cfg').open=true;
 $('#cs').onclick=async()=>{localStorage.setItem('gu',$('#cu').value.trim());localStorage.setItem('gk',$('#ck').value);$('#cm').textContent='กำลังทดสอบ…';try{const j=await gcall({action:'ping'});$('#cm').textContent=j.hasKey?'เชื่อมต่อสำเร็จ ✓ โมเดล: '+j.model:'เชื่อมต่อได้ แต่ยังไม่ได้ตั้ง GEMINI_KEY';initDB()}catch(e){$('#cm').textContent=(ERRC[e.code]||'เชื่อมต่อไม่ได้')+(e.message?' ['+String(e.message).slice(0,200)+']':'')}};
+const GUARD='\n\nข้อควรปฏิบัติ: ห้ามขอหรือใช้ข้อมูลระบุตัวผู้ป่วย และระบุให้ผู้ใช้ตรวจทานก่อนใช้จริง ถ้าผู้ใช้ขอรายงานหรือตาราง ให้เขียนเป็น Markdown โดยใช้หัวข้อ # และตารางแบบ | คอลัมน์ | เพื่อส่งออกเป็น Word/Excel ได้ ถ้าขอสไลด์หรือพรีเซนเทชันให้เขียน # ชื่อเรื่อง แล้วใช้ ## หนึ่งหัวข้อต่อหนึ่งสไลด์ พร้อมหัวข้อย่อยสั้นๆ 3-5 ข้อ และไม่ต้องเกริ่นนำยาว\n\n---\nงานที่สั่ง: ';
+const ROSTER=()=>STAFF.filter(s=>s.id!=='ld').map(s=>s.id+' = '+s.n+' ('+s.r+')').join('\n');
+const leadPrompt=()=>'คุณคือหัวหน้าทีมของหน่วยโรคหลอดเลือดสมอง โรงพยาบาลนครปฐม หน้าที่คือรับงานจากผู้ใช้ แตกเป็นงานย่อย แล้วมอบหมายให้พนักงานที่เหมาะสม\nพนักงานที่มี (id = ชื่อ (หน้าที่)):\n'+ROSTER()+'\nกติกา: เลือกพนักงานเท่าที่จำเป็น ไม่เกิน 4 งาน คำสั่งของแต่ละงานย่อยต้องครบถ้วนและมีบริบทที่จำเป็นทั้งหมด เพราะพนักงานไม่เห็นข้อความของผู้ใช้ ห้ามใส่ข้อมูลระบุตัวผู้ป่วย ถ้างานง่ายและไม่ต้องมอบหมาย ให้ตอบเองด้วย {"direct":"คำตอบ"}\nตอบเป็น JSON เท่านั้น ห้ามมีข้อความอื่นหรือ markdown fence ตามรูปแบบ {"summary":"สรุปแผนสั้นๆ","tasks":[{"staff":"id","task":"คำสั่ง"}]}';
+async function askStaff(s,task){return gsample([{role:'user',content:s.p+(s.id==='rk'?rkKB(false):'')+kbText(s.id)+GUARD+task}])}
+async function retry(fn){try{return await fn()}catch(e){if(e&&e.code==='rate_limited'){await new Promise(r=>setTimeout(r,12000));return await fn()}throw e}}
+async function leadSend(){const v=$('#t').value.trim();if(!v||busy)return;const me=cur,h=hist[me.id];
+const fs=att[me.id]||[];let ft='';fs.forEach(f=>{if(!f.blob)ft+='\n\n[ไฟล์แนบ: '+f.name+']\n'+f.text.slice(0,40000)});
+const shown=v+(fs.length?'\n📎 '+fs.map(f=>f.name).join(', '):'');h.push({role:'user',content:shown});att[me.id]=[];showFiles();$('#t').value='';
+if(h.length===1)$('#log').innerHTML='';bubble('me',shown);busy=true;$('#send').disabled=true;st.ld='work';
+const work=bubble('bot','🧭 หัวหน้าทีมกำลังวางแผนและมอบหมายงาน…');
+const fin=(txt)=>{h.push({role:'assistant',content:txt});bubble('bot',txt,true);saveJob(me,v,txt);st.ld='done'};
+try{
+const plan=await retry(()=>gsample([{role:'user',content:leadPrompt()+'\n\nงานจากผู้ใช้: '+v+ft}]));work.remove();
+let pj=null;const raw=plan.text.replace(/```(?:json)?/g,'').trim();try{pj=JSON.parse(raw)}catch(e){const m=raw.match(/\{[\s\S]*\}/);if(m)try{pj=JSON.parse(m[0])}catch(e2){}}
+if(!pj||(!pj.direct&&!(pj.tasks&&pj.tasks.length))){fin(plan.text);return}
+if(pj.direct){fin(String(pj.direct));return}
+const tasks=pj.tasks.filter(t=>t&&t.task&&STAFF.some(s=>s.id===t.staff&&s.id!=='ld')).slice(0,4);
+if(!tasks.length){fin(plan.text);return}
+bubble('bot','📋 '+(pj.summary||'แผนงาน')+'\n\n'+tasks.map((t,i)=>(i+1)+'. '+STAFF.find(s=>s.id===t.staff).n+': '+String(t.task).slice(0,160)).join('\n'));
+const res=[];
+for(const t of tasks){const s=STAFF.find(x=>x.id===t.staff);st[s.id]='work';const w=bubble('bot','⏳ '+s.n+' กำลังทำงาน…');
+try{const r=await retry(()=>askStaff(s,t.task));res.push({s,a:r.text});st[s.id]='done';w.textContent='✅ '+s.n+' ส่งงานแล้ว (ดูฉบับเต็มในแท็บประวัติ)';saveJob(s,t.task,r.text)}
+catch(e){st[s.id]='idle';w.textContent='⚠️ '+s.n+': '+(ERRC[e.code]||'ทำงานไม่สำเร็จ')+(e&&e.message?' ['+String(e.message).slice(0,120)+']':'')}}
+if(!res.length){bubble('bot','ยังไม่มีงานที่ทำสำเร็จ ลองสั่งใหม่อีกครั้งค่ะ');st.ld='idle';return}
+const w2=bubble('bot','🧭 หัวหน้าทีมกำลังรวมผลงานเป็นรายงาน…');
+const sum=await retry(()=>gsample([{role:'user',content:'คุณคือหัวหน้าทีมของหน่วยโรคหลอดเลือดสมอง โรงพยาบาลนครปฐม รวมผลงานของพนักงานต่อไปนี้เป็นรายงานสรุปฉบับเดียวที่เรียบเรียงดี ตอบเป็น Markdown ใช้หัวข้อ # สำหรับชื่อเรื่อง และ ## สำหรับแต่ละหัวข้อ ใช้ตารางแบบ | เมื่อเหมาะสม ไม่ต้องเกริ่นนำ และระบุท้ายรายงานให้ตรวจทานก่อนใช้จริง\n\nคำสั่งเดิมของผู้ใช้: '+v+'\n\nผลงาน:\n'+res.map(r=>'### '+r.s.n+'\n'+r.a.slice(0,12000)).join('\n\n')}]));
+w2.remove();fin(sum.text)}
+catch(e){h.pop();st.ld='idle';if(!$('#t').value)$('#t').value=v;att[me.id]=fs;showFiles();work.textContent=(ERRC[e&&e.code]||'ทำงานไม่สำเร็จ ลองส่งใหม่อีกครั้งนะคะ')+(e&&e.message&&e.code!=='not_granted'?' [รายละเอียด: '+String(e.message).slice(0,200)+']':'')+' (ใส่คำสั่งเดิมกลับในช่องให้แล้ว)'}
+finally{busy=false;$('#send').disabled=false}}
 pick(STAFF[0]);
 </script>
 </body>
